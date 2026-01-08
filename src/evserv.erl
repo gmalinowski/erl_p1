@@ -34,6 +34,31 @@ subsribe(Client) ->
         {error, timeout}
     end.
 
+add_event(Name, Description, DateTime) ->
+    Ref = make_ref(),
+    ?MODULE ! {self(), Ref, {add, Name, Description, DateTime}},
+    receive
+        {Ref, Msg} -> Msg
+    after 5000 ->
+        {error, timeout}
+    end.
+
+cancel_event(Name) ->
+    Ref = make_ref(),
+    ?MODULE ! {self(), Ref, {cancel, Name}},
+    receive
+        {Ref, ok} -> ok
+    after 5000 ->
+        {error, timeout}
+    end.
+
+listen(Delay) ->
+    receive
+        M = {done, _Name, _Description} ->
+            [M | listen(0)]
+        after Delay*1000 ->
+            []
+        end.
 
 % Internal functions
 init() ->
