@@ -9,6 +9,33 @@
     datetime={{1970,1,1}, {0,0,0}}
     }).
 
+
+% API
+start() ->
+    register(?MODULE, Pid = spawn(?MODULE, init, [])),
+    Pid.
+
+start_link() ->
+    register(?MODULE, Pid = spawn_link(?MODULE, init, [])),
+    Pid.
+
+terminate() ->
+    ?MODULE ! shutdown.
+
+subsribe(Client) ->
+    Ref = erlang:monitor(process, whereis(?MODULE)),
+    ?MODULE ! {self(), Ref, {subscribe, Client}},
+    receive
+        {Ref, ok} ->
+            {Ref, ok};
+        {'DOWN', Ref, process, _Pid, Reason} ->
+            {error, Reason}
+    after 5000 ->
+        {error, timeout}
+    end.
+
+
+% Internal functions
 init() ->
     loop(#state{events=orddict:new(), clients=orddict:new()}).
 
