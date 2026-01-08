@@ -1,6 +1,7 @@
 -module(event).
--compile(export_all).
 -record(state, {server, name="", to_go=[]}).
+% -export([start/2, start_link/2, cancel/1]).
+-compile(export_all).
 
 
 start(EventName, DateTime) ->

@@ -1,4 +1,6 @@
 -module(evserv).
+
+% -export([start/0, start_link/0, subsribe/1, add_event/3, cancel_event/1, listen/1]).
 -compile(export_all).
 
 -record(state, {events, clients}).
